@@ -1,16 +1,15 @@
 # status_grab
 
-A new Flutter project.
+This is a Flutter app which is used to download WhatsApp Status images and videos of your friends.
 
-## Getting Started
+## How did the idea come?
 
-This project is a starting point for a Flutter application.
+This project started one day when I wanted to download a video from a friend's WhatsApp status. I decided on creating a quick app. I should say that in the thick of development, I got stuck on how to implement video download and subsequently play, at that moment I found a resource which had a similar idea online. 
 
-A few resources to get you started if this is your first Flutter project:
+The idea is not new and the code is not entirely mine.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Next steps?
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This project is not yet on app store. I am working on perfecting it and I hope that I will one day get time to get it right and ready for the market.
+
+I also have to get good colours, nice logo and make this video play look like a video player. Currently its an embarrassment 
