@@ -9,11 +9,11 @@ class VideoStatus extends StatefulWidget {
   final double aspectRatio;
 
   VideoStatus({
-    @required this.videoPlayerController,
-    this.looping,
-    this.videoSrc,
-    this.aspectRatio,
-    Key key,
+    required this.videoPlayerController,
+    required this.looping,
+    required this.videoSrc,
+    required this.aspectRatio,
+    required Key key,
   }) : super(key: key);
 
   @override
@@ -21,7 +21,7 @@ class VideoStatus extends StatefulWidget {
 }
 
 class _VideoStatusState extends State<VideoStatus> {
-  ChewieController _chewieController;
+   late ChewieController _chewieController;
   @override
   void initState() {
     super.initState();

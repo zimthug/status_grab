@@ -11,40 +11,32 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
-  DateTime currentBackPressTime = DateTime.now();
-  int _storagePermissionCheck;
-  Future<int> _storagePermissionChecker;
-  TabController _tabController;
+  // late int _storagePermissionCheck;
+  late Future<int> _storagePermissionChecker;
+  late TabController _tabController;
 
-  Future<bool> onWillPop() {
-    DateTime now = DateTime.now();
-    if (now.difference(currentBackPressTime) > Duration(seconds: 4)) {
-      currentBackPressTime = now;
-      final snackBar = SnackBar(content: Text(Constants.willPopAlert));
-      _scaffoldkey.currentState.showSnackBar(snackBar);
-      return Future.value(false);
-    }
-    return Future.value(true);
-  }
-
-  Future<int> checkStoragePermission() async {
-    PermissionStatus result = await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.storage);
-    setState(() {
-      _storagePermissionCheck = 1;
-    });
-    if (result.toString() == 'PermissionStatus.denied') {
-      return 0;
-    } else if (result.toString() == 'PermissionStatus.granted') {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
+  // Future<int> checkStoragePermission() async {
+  //   PermissionStatus result = await PermissionHandler()
+  //       .checkPermissionStatus(PermissionGroup.storage);
+  //   setState(() {
+  //     _storagePermissionCheck = 1;
+  //   });
+  //   if (result.toString() == 'PermissionStatus.denied') {
+  //     return 0;
+  //   } else if (result.toString() == 'PermissionStatus.granted') {
+  //     return 1;
+  //   } else {
+  //     return 0;
+  //   }
+  // }
 
   Future<int> requestStoragePermission() async {
-    Map<PermissionGroup, PermissionStatus> result =
-        await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+    Map<Permission, PermissionStatus> result = await [
+      Permission.storage,
+      //Permission.camera,
+      //add more permission to request here.
+    ].request();
+    // await PermissionHandler().requestPermissions([PermissionGroup.storage]);
     if (result.toString() == 'PermissionStatus.denied') {
       return 1;
     } else if (result.toString() == 'PermissionStatus.granted') {
@@ -60,30 +52,31 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
     _tabController = new TabController(vsync: this, initialIndex: 0, length: 2);
     _tabController.addListener(_handleTabIndex);
 
-    _storagePermissionChecker = (() async {
-      int storagePermissionCheckInt;
-      int finalPermission;
+    // _storagePermissionChecker = (() async {
 
-      if (_storagePermissionCheck == null || _storagePermissionCheck == 0) {
-        _storagePermissionCheck = await checkStoragePermission();
-      } else {
-        _storagePermissionCheck = 1;
-      }
+    // int storagePermissionCheckInt;
+    // int finalPermission;
 
-      if (_storagePermissionCheck == 1) {
-        storagePermissionCheckInt = 1;
-      } else {
-        storagePermissionCheckInt = 0;
-      }
+    //   if (_storagePermissionCheck == null || _storagePermissionCheck == 0) {
+    //     _storagePermissionCheck = await checkStoragePermission();
+    //   } else {
+    //     _storagePermissionCheck = 1;
+    //   }
 
-      if (storagePermissionCheckInt == 1) {
-        finalPermission = 1;
-      } else {
-        finalPermission = 0;
-      }
+    //   if (_storagePermissionCheck == 1) {
+    //     storagePermissionCheckInt = 1;
+    //   } else {
+    //     storagePermissionCheckInt = 0;
+    //   }
 
-      return finalPermission;
-    })();
+    //   if (storagePermissionCheckInt == 1) {
+    //     finalPermission = 1;
+    //   } else {
+    //     finalPermission = 0;
+    //   }
+
+    //   return finalPermission;
+    // })();
   }
 
   @override
@@ -111,11 +104,34 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
         });
   }
 
-  Widget hasPermission() {
+  Widget body() {
     //TabController tabController = new TabController(length: 2, vsync: this);
+    return TabBarView(
+      controller: _tabController,
+      children: [
+        ImageScreen(),
+        VideoScreen(),
+      ],
+    );
+  }
 
+  Widget hasPermission() {
+    DateTime _lastExitTime = DateTime.now();
     return WillPopScope(
-      onWillPop: onWillPop,
+      onWillPop: () async {
+        if (DateTime.now().difference(_lastExitTime) >= Duration(seconds: 2)) {
+          //showing message to user
+          final snack = SnackBar(
+            content: Text(Constants.willPopAlert),
+            duration: Duration(seconds: 3),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snack);
+          _lastExitTime = DateTime.now();
+          return false; // disable back press
+        } else {
+          return true; //  exit the app
+        }
+      },
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -144,19 +160,8 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
           ),
         ),
         body: body(),
-		//body: Container(),
+        //body: Container(),
       ),
-    );
-  }
-
-  Widget body() {
-    //TabController tabController = new TabController(length: 2, vsync: this);
-    return TabBarView(
-      controller: _tabController,
-      children: [
-        ImageScreen(),
-        VideoScreen(),
-      ],
     );
   }
 
@@ -174,14 +179,16 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 style: TextStyle(fontSize: 20.0),
               ),
             ),
-            FlatButton(
-              padding: EdgeInsets.all(15.0),
+            TextButton(
               child: Text(
                 "Allow Storage Permission",
                 style: TextStyle(fontSize: 20.0),
               ),
-              color: Colors.indigo,
-              textColor: Colors.white,
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.indigo,
+                padding: EdgeInsets.all(15.0),
+              ),
               onPressed: () {
                 setState(() {
                   _storagePermissionChecker = requestStoragePermission();

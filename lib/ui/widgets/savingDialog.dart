@@ -12,21 +12,6 @@ class SavingDialog extends StatefulWidget {
 class _SavingDialogState extends State<SavingDialog> {
   @override
   Widget build(BuildContext context) {
-    if (widget.progress) {
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return SimpleDialog(
-              children: <Widget>[
-                Center(
-                  child: Container(
-                      padding: EdgeInsets.all(10.0),
-                      child: CircularProgressIndicator()),
-                ),
-              ],
-            );
-          });
-    } else {}
+    return Container();
   }
 }
